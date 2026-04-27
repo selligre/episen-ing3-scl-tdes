@@ -1,0 +1,136 @@
+2026-04-26 19:44:00,855 - INFO - [__init__] - ================================================================================
+2026-04-26 19:44:00,855 - INFO - [__init__] - INITIALISATION DU SYSTEME DE CHIFFREMENT MULTI-ETAPES
+2026-04-26 19:44:00,855 - INFO - [__init__] - ================================================================================
+2026-04-26 19:44:00,855 - INFO - [run_demonstration] - 
+
+
+2026-04-26 19:44:00,855 - INFO - [run_demonstration] - ################################################################################
+2026-04-26 19:44:00,855 - INFO - [run_demonstration] - # DEMONSTRATION DU SYSTEME DE CHIFFREMENT MULTI-ETAPES
+2026-04-26 19:44:00,855 - INFO - [run_demonstration] - ################################################################################
+2026-04-26 19:44:00,855 - INFO - [ask_sensitivity_level] - DEMANDE DU NIVEAU DE SENSIBILITE
+2026-04-26 19:44:00,855 - INFO - [ask_sensitivity_level] - --------------------------------------------------------------------------------
+2026-04-26 19:44:00,855 - INFO - [display_sensitivity_levels] - 
+================================================================================
+2026-04-26 19:44:00,855 - INFO - [display_sensitivity_levels] - NIVEAUX DE SENSIBILITE DISPONIBLES
+2026-04-26 19:44:00,855 - INFO - [display_sensitivity_levels] - ================================================================================
+2026-04-26 19:44:00,855 - INFO - [display_sensitivity_levels] - Niveau 1: Bas
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Description: 1 etape de chiffrement DES
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Nombre d'etapes: 1
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Taille de cle: 16 octets
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] - Niveau 2: Moyen
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Description: 2 etapes de chiffrement DES
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Nombre d'etapes: 2
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Taille de cle: 16 octets
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] - Niveau 3: Haut/Critique
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Description: Triple DES (3 etapes)
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Nombre d'etapes: 3
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] -   - Taille de cle: 24 octets
+2026-04-26 19:44:00,856 - INFO - [display_sensitivity_levels] - ================================================================================
+
+2026-04-26 19:44:01,854 - INFO - [ask_sensitivity_level] - [OK] Niveau de sensibilite selectionne: 3 (Haut/Critique)
+2026-04-26 19:44:01,855 - INFO - [ask_sensitivity_level] -   - Triple DES (3 etapes)
+2026-04-26 19:44:01,855 - INFO - [ask_sensitivity_level] -   - Nombre d'etapes d'encryptage: 3
+
+2026-04-26 19:44:01,855 - INFO - [generate_keys] - 
+================================================================================
+2026-04-26 19:44:01,855 - INFO - [generate_keys] - GENERATION DES CLES D'ENCRYPTAGE (3 cle(s), 24 octets chacune)
+2026-04-26 19:44:01,855 - INFO - [generate_keys] - ================================================================================
+2026-04-26 19:44:01,855 - INFO - [generate_des_key] -   Cle 1 generee (24 octets): 5VyPu3y/G2tnYweb/5HOrFfO3q0QMva2
+2026-04-26 19:44:01,855 - INFO - [generate_des_key] -   Cle 2 generee (24 octets): 30gt1LyIyosBvw0tMeapj1VUTiEj0V4x
+2026-04-26 19:44:01,855 - INFO - [generate_des_key] -   Cle 3 generee (24 octets): LReNRTfQENk0s6ZS5WUWWSPZ27A+hPv1
+2026-04-26 19:44:01,855 - INFO - [generate_keys] - [OK] 3 cle(s) generee(s) avec succes
+
+2026-04-26 19:44:01,855 - INFO - [run_demonstration] - 
+================================================================================
+2026-04-26 19:44:01,855 - INFO - [run_demonstration] - SAISIE DES DONNEES A CHIFFRER
+2026-04-26 19:44:01,855 - INFO - [run_demonstration] - ================================================================================
+2026-04-26 19:44:19,721 - INFO - [encrypt_data] - 
+================================================================================
+2026-04-26 19:44:19,721 - INFO - [encrypt_data] - PROCESSUS DE CHIFFREMENT MULTI-ETAPES (3 etape(s))
+2026-04-26 19:44:19,721 - INFO - [encrypt_data] - ================================================================================
+2026-04-26 19:44:19,722 - INFO - [encrypt_data] - Donnees originales: 64 octets
+2026-04-26 19:44:19,722 - INFO - [encrypt_data] - Contenu: b'super text top secret avec des c4h1123409871-!)(@*'...
+2026-04-26 19:44:19,722 - INFO - [encrypt_data] - 1. APPLICATION DU PADDING
+2026-04-26 19:44:19,722 - INFO - [encrypt_data] - ----------------------------------------
+2026-04-26 19:44:19,722 - INFO - [pad_data] -   Padding applique: 8 octets ajoutes
+2026-04-26 19:44:19,722 - INFO - [pad_data] -   Taille avant padding: 64 octets
+2026-04-26 19:44:19,722 - INFO - [pad_data] -   Taille apres padding: 72 octets
+2026-04-26 19:44:19,722 - INFO - [encrypt_data] - 2. ETAPES DE CHIFFREMENT DES
+2026-04-26 19:44:19,722 - INFO - [encrypt_data] - ----------------------------------------
+2026-04-26 19:44:19,722 - INFO - [encrypt_stage] - 
+2026-04-26 19:44:19,722 - INFO - [encrypt_stage] -   [=== ETAPE 1 DE CHIFFREMENT ===]
+2026-04-26 19:44:19,723 - INFO - [encrypt_stage] -     Cle utilisee: 5VyPu3y/G2tnYweb/5HOrFfO3q0QMva2
+2026-04-26 19:44:19,723 - INFO - [encrypt_stage] -     Taille de la cle: 24 octets
+2026-04-26 19:44:19,723 - INFO - [encrypt_stage] -     Donnees a chiffrer: 72 octets
+2026-04-26 19:44:19,724 - INFO - [encrypt_stage] -     [OK] Donnees chiffrees: 72 octets
+2026-04-26 19:44:19,724 - INFO - [encrypt_stage] -     [OK] Donnees chiffrees (base64): bNBV7ntx9ymUXVHil0XBIMiEEwXYMmStEkqW0h+6RJz4p6HSSULFnsWHHS4HnWxY9Wo9/Lg/gxzEsyamm9atOc5UYPP1rfPy
+2026-04-26 19:44:19,724 - INFO - [encrypt_stage] - 
+2026-04-26 19:44:19,724 - INFO - [encrypt_stage] -   [=== ETAPE 2 DE CHIFFREMENT ===]
+2026-04-26 19:44:19,724 - INFO - [encrypt_stage] -     Cle utilisee: 30gt1LyIyosBvw0tMeapj1VUTiEj0V4x
+2026-04-26 19:44:19,724 - INFO - [encrypt_stage] -     Taille de la cle: 24 octets
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     Donnees a chiffrer: 72 octets
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     [OK] Donnees chiffrees: 72 octets
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     [OK] Donnees chiffrees (base64): +4PgftvtJcNdlIoKLNPTqe3gG69Uv7szXG8v4/ghrzs8E+SGehPkjDDARAin3QJayxbtqOHytU3nrsHDI0euCkgxzAZx/oHM
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] - 
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -   [=== ETAPE 3 DE CHIFFREMENT ===]
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     Cle utilisee: LReNRTfQENk0s6ZS5WUWWSPZ27A+hPv1
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     Taille de la cle: 24 octets
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     Donnees a chiffrer: 72 octets
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     [OK] Donnees chiffrees: 72 octets
+2026-04-26 19:44:19,725 - INFO - [encrypt_stage] -     [OK] Donnees chiffrees (base64): AK6u9+xOoVP4ylhWgYyjv+1ykXRu566AIfASyoVwohqosFz0CA/fIJ/k49pbGIAxM2xbZyM5bMS/w5h85bHDILj2jqXRhBCS
+2026-04-26 19:44:19,726 - INFO - [encrypt_data] - 
+================================================================================
+2026-04-26 19:44:19,726 - INFO - [encrypt_data] - [OK] CHIFFREMENT TERMINE AVEC SUCCES
+2026-04-26 19:44:19,726 - INFO - [encrypt_data] - ================================================================================
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - 
+================================================================================
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - RESULTAT DU CHIFFREMENT
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - ================================================================================
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - Donnees chiffrees (base64): AK6u9+xOoVP4ylhWgYyjv+1ykXRu566AIfASyoVwohqosFz0CA/fIJ/k49pbGIAxM2xbZyM5bMS/w5h85bHDILj2jqXRhBCS
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - Taille: 72 octets
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - 
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - ================================================================================
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - VERIFICATION PAR DECHIFFREMENT
+2026-04-26 19:44:19,726 - INFO - [run_demonstration] - ================================================================================
+2026-04-26 19:44:19,726 - INFO - [decrypt_data] - 
+================================================================================
+2026-04-26 19:44:19,727 - INFO - [decrypt_data] - PROCESSUS DE DECHIFFREMENT (3 etape(s))
+2026-04-26 19:44:19,727 - INFO - [decrypt_data] - ================================================================================
+2026-04-26 19:44:19,727 - INFO - [decrypt_data] - Donnees chiffrees recues: 72 octets
+2026-04-26 19:44:19,727 - INFO - [decrypt_data] - 2. ETAPES DE DECHIFFREMENT DES (ordre inverse)
+2026-04-26 19:44:19,727 - INFO - [decrypt_data] - ----------------------------------------
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] - 
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -   [=== ETAPE 1 DE DECHIFFREMENT ===]
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     Cle utilisee: LReNRTfQENk0s6ZS5WUWWSPZ27A+hPv1
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     Donnees a dechiffrer: 72 octets
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     [OK] Donnees dechiffrees: 72 octets
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] - 
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -   [=== ETAPE 2 DE DECHIFFREMENT ===]
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     Cle utilisee: 30gt1LyIyosBvw0tMeapj1VUTiEj0V4x
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     Donnees a dechiffrer: 72 octets
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     [OK] Donnees dechiffrees: 72 octets
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] - 
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -   [=== ETAPE 3 DE DECHIFFREMENT ===]
+2026-04-26 19:44:19,727 - INFO - [decrypt_stage] -     Cle utilisee: 5VyPu3y/G2tnYweb/5HOrFfO3q0QMva2
+2026-04-26 19:44:19,728 - INFO - [decrypt_stage] -     Donnees a dechiffrer: 72 octets
+2026-04-26 19:44:19,728 - INFO - [decrypt_stage] -     [OK] Donnees dechiffrees: 72 octets
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] - 1. SUPPRESSION DU PADDING
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] - ----------------------------------------
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] -   Padding detecte: 8 octets
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] -   Donnees apres suppression du padding: 64 octets
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] - 
+================================================================================
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] - [OK] DECHIFFREMENT TERMINE AVEC SUCCES
+2026-04-26 19:44:19,728 - INFO - [decrypt_data] - ================================================================================
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - 
+================================================================================
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - RESULTATS DE LA VERIFICATION
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - ================================================================================
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - Donnees dechiffrees: super text top secret avec des c4h1123409871-!)(@*#&^%_ bizarres
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - [OK] VERIFICATION REUSSIE: Les donnees correspondent!
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - ================================================================================
+2026-04-26 19:44:19,728 - INFO - [run_demonstration] - Le fichier 'encryption_process.log' contient tous les details du processus
+2026-04-26 19:44:19,728 - INFO - [main] - 
+################################################################################
+2026-04-26 19:44:19,728 - INFO - [main] - # DEMONSTRATION TERMINEE AVEC SUCCES
+2026-04-26 19:44:19,728 - INFO - [main] - ################################################################################
