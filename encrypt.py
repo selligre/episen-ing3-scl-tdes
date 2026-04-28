@@ -10,7 +10,7 @@ Le script implemente un systeme de sensibilite pour les donnees:
 """
 
 import logging
-from Crypto.Cipher import DES3
+from Crypto.Cipher import DES3, AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 import base64
@@ -79,24 +79,25 @@ class SensitivityBasedEncryption:
         1: {
             "name": "Bas",
             "stages": 1,
-            "description": "1 etape de chiffrement DES",
+            "description": "1 etape de chiffrement",
             "key_size": 16,
         },
         2: {
             "name": "Moyen",
             "stages": 2,
-            "description": "2 etapes de chiffrement DES",
+            "description": "2 etapes de chiffrement",
             "key_size": 16,
         },
         3: {
             "name": "Haut/Critique",
             "stages": 3,
-            "description": "Triple DES (3 etapes)",
+            "description": "3 etapes de chiffrement (Triple encryption)",
             "key_size": 24,
         },
     }
 
     DES_BLOCK_SIZE = 8  # DES fonctionne avec des blocs de 8 octets
+    AES_BLOCK_SIZE = 16  # AES fonctionne avec des blocs de 16 octets
 
     def __init__(self):
         logger.info("╔" + "=" * 78 + "╗")
@@ -105,10 +106,25 @@ class SensitivityBasedEncryption:
         self.keys = []
         self.sensitivity_level = None
         self.data_to_encrypt = None
+        self.algorithm = None  # "DES" ou "AES"
         self.timers = {
             'total': None,
             'encrypt': None,
             'decrypt': None
+        }
+        
+        # Paramètres selon l'algorithme
+        self.ALGORITHM_PARAMS = {
+            "DES": {
+                "block_size": 8,
+                "iv_size": 8,
+                "description": "Triple DES (3DES)"
+            },
+            "AES": {
+                "block_size": 16,
+                "iv_size": 16,
+                "description": "Advanced Encryption Standard (AES)"
+            }
         }
 
     def display_sensitivity_levels(self):
@@ -161,6 +177,37 @@ class SensitivityBasedEncryption:
                 logger.warning("Entree invalide: veuillez entrer un nombre.")
                 print("Erreur: Veuillez entrer un nombre valide.")
 
+    def ask_algorithm(self):
+        """Demande a l'utilisateur de choisir l'algorithme de chiffrement"""
+        logger.info("\n┌" + "─" * 78 + "┐")
+        logger.info("│ " + "CHOIX DE L'ALGORITHME DE CHIFFREMENT".ljust(76) + " │")
+        logger.info("└" + "─" * 78 + "┘")
+        
+        logger.info("\nAlgorithmes disponibles:")
+        logger.info("  1. DES  - Triple DES (3DES) - Algorithme classique")
+        logger.info("  2. AES  - Advanced Encryption Standard - Algorithme moderne")
+        
+        while True:
+            try:
+                choice = input("\nVeuillez selectionner (1 pour DES / 2 pour AES): ").strip()
+                if choice == "1":
+                    self.algorithm = "DES"
+                    logger.info("[✓] Algorithme selectionne: DES (Triple DES)")
+                    return "DES"
+                elif choice == "2":
+                    self.algorithm = "AES"
+                    logger.info("[✓] Algorithme selectionne: AES (Advanced Encryption Standard)")
+                    return "AES"
+                else:
+                    if choice == "":
+                        logger.warning("Veuillez entrer une valeur.")
+                    else:
+                        logger.warning("Choix invalide: {}. Veuillez entrer 1 ou 2.".format(choice))
+                    print("Erreur: Veuillez entrer 1 ou 2.")
+            except ValueError:
+                logger.warning("Entree invalide: veuillez entrer un nombre.")
+                print("Erreur: Veuillez entrer un nombre valide.")
+
     def generate_des_key(self, key_number, key_size):
         """
         Genere une cle DES aleatoire unique
@@ -195,23 +242,23 @@ class SensitivityBasedEncryption:
 
     def pad_data(self, data):
         """
-        Ajoute du padding PKCS7 aux donnees pour qu'elles soient un multiple de 8 octets
+        Ajoute du padding PKCS7 aux donnees pour qu'elles soient un multiple de la taille de bloc
         """
-        block_size = self.DES_BLOCK_SIZE
+        block_size = self.AES_BLOCK_SIZE if self.algorithm == "AES" else self.DES_BLOCK_SIZE
         padded_data = pad(data, block_size)
 
         padding_length = len(padded_data) - len(data)
         logger.info("  ✓ Padding applique: {} octets ajoutes".format(padding_length))
         logger.info("    Taille avant padding: {} octets".format(len(data)))
-        logger.info("    Taille apres padding: {} octets".format(len(padded_data)))
+        logger.info("    Taille apres padding: {} octets (bloc: {})".format(len(padded_data), block_size))
 
         return padded_data
 
     def encrypt_stage(self, data, key, stage_number):
-        """Effectue une etape de chiffrement DES"""
+        """Effectue une etape de chiffrement DES ou AES"""
         try:
             logger.info("")
-            logger.info("  ╔═══ ETAPE {} DE CHIFFREMENT ═══╗".format(stage_number))
+            logger.info("  ╔═══ ETAPE {} DE CHIFFREMENT ({}) ═══╗".format(stage_number, self.algorithm))
 
             # Affiche les informations de la cle
             key_b64 = base64.b64encode(key).decode()
@@ -219,9 +266,15 @@ class SensitivityBasedEncryption:
             logger.info("       Taille de la cle: {} octets".format(len(key)))
             logger.info("       Donnees a chiffrer: {} octets".format(len(data)))
 
-            # Creation du chiffre DES3
-            des_cipher = DES3.new(key, DES3.MODE_ECB)
-            encrypted_data = des_cipher.encrypt(data)
+            # Creation du chiffre selon l'algorithme
+            if self.algorithm == "DES":
+                des_cipher = DES3.new(key, DES3.MODE_ECB)
+                encrypted_data = des_cipher.encrypt(data)
+            elif self.algorithm == "AES":
+                aes_cipher = AES.new(key, AES.MODE_ECB)
+                encrypted_data = aes_cipher.encrypt(data)
+            else:
+                raise ValueError("Algorithme non supporté: {}".format(self.algorithm))
 
             encrypted_b64 = base64.b64encode(encrypted_data).decode()
             logger.info(
@@ -252,7 +305,7 @@ class SensitivityBasedEncryption:
             self.timers['encrypt'] = timer
             
             logger.info("\n┌" + "─" * 78 + "┐")
-            logger.info("│ " + f"PROCESSUS DE CHIFFREMENT MULTI-ETAPES ({num_stages} etape(s))".ljust(76) + " │")
+            logger.info("│ " + f"PROCESSUS DE CHIFFREMENT MULTI-ETAPES ({num_stages} etape(s), {self.algorithm})".ljust(76) + " │")
             logger.info("└" + "─" * 78 + "┘")
 
             # Convertir les donnees en bytes si necessaire
@@ -272,7 +325,7 @@ class SensitivityBasedEncryption:
 
             # Chiffrement multi-etapes
             encrypted_data = padded_data
-            logger.info("\n▶ 2. ETAPES DE CHIFFREMENT DES")
+            logger.info("\n▶ 2. ETAPES DE CHIFFREMENT {} ".format(self.algorithm))
             logger.info("  " + "─" * 76)
 
             for stage in range(1, num_stages + 1):
@@ -286,17 +339,24 @@ class SensitivityBasedEncryption:
             return encrypted_data
 
     def decrypt_stage(self, data, key, stage_number, total_stages):
-        """Effectue une etape de dechiffrement DES"""
+        """Effectue une etape de dechiffrement DES ou AES"""
         try:
             logger.info("")
-            logger.info("  ╔═══ ETAPE {} DE DECHIFFREMENT ═══╗".format(stage_number))
+            logger.info("  ╔═══ ETAPE {} DE DECHIFFREMENT ({}) ═══╗".format(stage_number, self.algorithm))
 
             key_b64 = base64.b64encode(key).decode()
             logger.info("    🔑 Cle utilisee: {}".format(key_b64))
             logger.info("       Donnees a dechiffrer: {} octets".format(len(data)))
 
-            des_cipher = DES3.new(key, DES3.MODE_ECB)
-            decrypted_data = des_cipher.decrypt(data)
+            # Dechiffrement selon l'algorithme
+            if self.algorithm == "DES":
+                des_cipher = DES3.new(key, DES3.MODE_ECB)
+                decrypted_data = des_cipher.decrypt(data)
+            elif self.algorithm == "AES":
+                aes_cipher = AES.new(key, AES.MODE_ECB)
+                decrypted_data = aes_cipher.decrypt(data)
+            else:
+                raise ValueError("Algorithme non supporté: {}".format(self.algorithm))
 
             logger.info(
                 "    ✓ Donnees dechiffrees: {} octets".format(len(decrypted_data))
@@ -325,14 +385,14 @@ class SensitivityBasedEncryption:
             self.timers['decrypt'] = timer
             
             logger.info("\n┌" + "─" * 78 + "┐")
-            logger.info("│ " + f"PROCESSUS DE DECHIFFREMENT ({num_stages} etape(s))".ljust(76) + " │")
+            logger.info("│ " + f"PROCESSUS DE DECHIFFREMENT ({num_stages} etape(s), {self.algorithm})".ljust(76) + " │")
             logger.info("└" + "─" * 78 + "┘")
 
             logger.info("🔒 Donnees chiffrees recues: {} octets".format(len(encrypted_data)))
 
             # Dechiffrement en ordre inverse
             decrypted_data = encrypted_data
-            logger.info("\n▶ 2. ETAPES DE DECHIFFREMENT DES (ordre inverse)")
+            logger.info("\n▶ 2. ETAPES DE DECHIFFREMENT {} (ordre inverse)".format(self.algorithm))
             logger.info("  " + "─" * 76)
 
             for stage in range(num_stages, 0, -1):
@@ -344,7 +404,8 @@ class SensitivityBasedEncryption:
             # Suppression du padding
             logger.info("\n▶ 1. SUPPRESSION DU PADDING")
             logger.info("  " + "─" * 76)
-            unpadded_data = unpad(decrypted_data, self.DES_BLOCK_SIZE)
+            block_size = self.AES_BLOCK_SIZE if self.algorithm == "AES" else self.DES_BLOCK_SIZE
+            unpadded_data = unpad(decrypted_data, block_size)
             padding_length = len(decrypted_data) - len(unpadded_data)
             logger.info("  Padding detecte: {} octets".format(padding_length))
             logger.info(
@@ -360,7 +421,7 @@ class SensitivityBasedEncryption:
             return unpadded_data
 
     def run_demonstration(
-        self, auto_test=False, sensitivity_level=None, test_data=None
+        self, auto_test=False, sensitivity_level=None, test_data=None, algorithm=None
     ):
         """Execute une demonstration complete du systeme"""
         with PerformanceTimer("Execution totale") as timer:
@@ -370,6 +431,13 @@ class SensitivityBasedEncryption:
             logger.info("╔" + "=" * 78 + "╗")
             logger.info("║ " + "DEMONSTRATION DU SYSTEME DE CHIFFREMENT MULTI-ETAPES".center(76) + " ║")
             logger.info("╚" + "=" * 78 + "╝")
+
+            # Etape 0: Choisir l'algorithme
+            if auto_test and algorithm:
+                self.algorithm = algorithm
+                logger.info("[TEST] Algorithme selectionne: {}".format(algorithm))
+            else:
+                self.ask_algorithm()
 
             # Etape 1: Demander le niveau de sensibilite
             if auto_test and sensitivity_level:
@@ -462,6 +530,7 @@ def main():
     auto_test = "--auto" in sys.argv or "--test" in sys.argv
     sensitivity_level = None
     test_data = None
+    algorithm = None
 
     # Parser les arguments
     for i, arg in enumerate(sys.argv[1:]):
@@ -472,6 +541,10 @@ def main():
                 pass
         elif arg == "--data" and i + 1 < len(sys.argv) - 1:
             test_data = sys.argv[i + 2]
+        elif arg == "--algo" and i + 1 < len(sys.argv) - 1:
+            algo_arg = sys.argv[i + 2].upper()
+            if algo_arg in ["DES", "AES"]:
+                algorithm = algo_arg
 
     try:
         encryptor = SensitivityBasedEncryption()
@@ -479,6 +552,7 @@ def main():
             auto_test=auto_test,
             sensitivity_level=sensitivity_level,
             test_data=test_data,
+            algorithm=algorithm,
         )
 
         logger.info("\n╔" + "=" * 78 + "╗")
