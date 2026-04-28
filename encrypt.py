@@ -208,6 +208,50 @@ class SensitivityBasedEncryption:
                 logger.warning("Entree invalide: veuillez entrer un nombre.")
                 print("Erreur: Veuillez entrer un nombre valide.")
 
+    def ask_data_source(self):
+        """Demande a l'utilisateur de choisir entre texte manuel ou fichier"""
+        logger.info("\n┌" + "─" * 78 + "┐")
+        logger.info("│ " + "SOURCE DES DONNEES A CHIFFRER".ljust(76) + " │")
+        logger.info("└" + "─" * 78 + "┘")
+        
+        logger.info("\nSources disponibles:")
+        logger.info("  1. Texte manuel - Saisir le texte directement")
+        logger.info("  2. Fichier     - Lire depuis un fichier texte")
+        
+        while True:
+            try:
+                choice = input("\nVeuillez selectionner (1 pour texte / 2 pour fichier): ").strip()
+                if choice == "1":
+                    return "manual"
+                elif choice == "2":
+                    return "file"
+                else:
+                    if choice == "":
+                        logger.warning("Veuillez entrer une valeur.")
+                    else:
+                        logger.warning("Choix invalide: {}. Veuillez entrer 1 ou 2.".format(choice))
+                    print("Erreur: Veuillez entrer 1 ou 2.")
+            except ValueError:
+                logger.warning("Entree invalide: veuillez entrer un nombre.")
+                print("Erreur: Veuillez entrer un nombre valide.")
+
+    def read_file_data(self, filepath):
+        """Lit les donnees depuis un fichier texte"""
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = f.read()
+            logger.info("[✓] Fichier lu avec succes: {}".format(filepath))
+            logger.info("   Taille: {} caracteres".format(len(data)))
+            return data
+        except FileNotFoundError:
+            logger.error("[ERREUR] Fichier non trouve: {}".format(filepath))
+            print("Erreur: Le fichier '{}' n'a pas ete trouve.".format(filepath))
+            return None
+        except Exception as e:
+            logger.error("[ERREUR] Erreur lors de la lecture du fichier: {}".format(str(e)))
+            print("Erreur: {}".format(str(e)))
+            return None
+
     def generate_des_key(self, key_number, key_size):
         """
         Genere une cle DES aleatoire unique
@@ -280,7 +324,10 @@ class SensitivityBasedEncryption:
             logger.info(
                 "    ✓ Donnees chiffrees: {} octets".format(len(encrypted_data))
             )
-            logger.info("       (base64): {}".format(encrypted_b64))
+            if len(encrypted_b64) > 100:
+                logger.info("       (base64): {}...".format(encrypted_b64[:100]))
+            else:
+                logger.info("       (base64): {}".format(encrypted_b64))
 
             return encrypted_data
 
@@ -421,7 +468,7 @@ class SensitivityBasedEncryption:
             return unpadded_data
 
     def run_demonstration(
-        self, auto_test=False, sensitivity_level=None, test_data=None, algorithm=None
+        self, auto_test=False, sensitivity_level=None, test_data=None, algorithm=None, input_file=None
     ):
         """Execute une demonstration complete du systeme"""
         with PerformanceTimer("Execution totale") as timer:
@@ -462,11 +509,28 @@ class SensitivityBasedEncryption:
             logger.info("\n┌" + "─" * 78 + "┐")
             logger.info("│ " + "SAISIE DES DONNEES A CHIFFRER".ljust(76) + " │")
             logger.info("└" + "─" * 78 + "┘")
+            
             if auto_test and test_data:
                 data = test_data
                 logger.info("[TEST] Donnees de test: {}".format(data))
+            elif input_file:
+                logger.info("[FICHIER] Lecture depuis: {}".format(input_file))
+                data = self.read_file_data(input_file)
+                if data is None:
+                    raise ValueError("Impossible de lire le fichier: {}".format(input_file))
             else:
-                data = input("Entrez le texte a chiffrer: ")
+                # Mode interactif
+                source = self.ask_data_source()
+                if source == "manual":
+                    data = input("Entrez le texte a chiffrer: ")
+                else:
+                    while True:
+                        filepath = input("Entrez le chemin du fichier: ").strip()
+                        data = self.read_file_data(filepath)
+                        if data is not None:
+                            break
+                        print("Veuillez entrer un chemin valide.")
+            
             self.data_to_encrypt = data
 
             # Etape 4: Chiffrer les donnees
@@ -477,7 +541,9 @@ class SensitivityBasedEncryption:
             logger.info("│ " + "RESULTAT DU CHIFFREMENT".ljust(76) + " │")
             logger.info("└" + "─" * 78 + "┘")
             encrypted_b64 = base64.b64encode(encrypted).decode()
-            logger.info("🔐 Donnees chiffrees (base64): {}".format(encrypted_b64))
+            logger.info("🔐 Donnees chiffrees (base64): {}".format(encrypted_b64[:100]))
+            if len(encrypted_b64) > 100:
+                logger.info("   ... (affichage tronque)")
             logger.info("   Taille: {} octets".format(len(encrypted)))
 
             # Etape 5: Dechiffrer pour verification
@@ -493,7 +559,12 @@ class SensitivityBasedEncryption:
             logger.info("└" + "─" * 78 + "┘")
             try:
                 decrypted_text = decrypted.decode("utf-8")
-                logger.info("✓ Donnees dechiffrees: {}".format(decrypted_text))
+                
+                # Afficher un extrait si le texte est trop long
+                if len(decrypted_text) > 100:
+                    logger.info("✓ Donnees dechiffrees: {}...".format(decrypted_text[:100]))
+                else:
+                    logger.info("✓ Donnees dechiffrees: {}".format(decrypted_text))
 
                 if decrypted_text == data:
                     logger.info("╔" + "=" * 78 + "╗")
@@ -531,6 +602,7 @@ def main():
     sensitivity_level = None
     test_data = None
     algorithm = None
+    input_file = None
 
     # Parser les arguments
     for i, arg in enumerate(sys.argv[1:]):
@@ -545,6 +617,8 @@ def main():
             algo_arg = sys.argv[i + 2].upper()
             if algo_arg in ["DES", "AES"]:
                 algorithm = algo_arg
+        elif arg == "--file" and i + 1 < len(sys.argv) - 1:
+            input_file = sys.argv[i + 2]
 
     try:
         encryptor = SensitivityBasedEncryption()
@@ -553,6 +627,7 @@ def main():
             sensitivity_level=sensitivity_level,
             test_data=test_data,
             algorithm=algorithm,
+            input_file=input_file,
         )
 
         logger.info("\n╔" + "=" * 78 + "╗")
